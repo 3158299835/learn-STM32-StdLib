@@ -1,42 +1,36 @@
-#include "stm32f10x.h"
-#include "Delay.h"
+#include "delay.h"
 
-/**
-  * @brief  å¾®ç§’çº§å»¶æ—¶
-  * @param  xus å»¶æ—¶æ—¶é•¿ï¼ŒèŒƒå›´ï¼š0~233015
-  * @retval æ— 
-  */
-void Delay_us(uint32_t xus)
+// ¶¨ÒåÑÓÊ±¼ÆÊýÖµ
+static volatile uint32_t TimingDelay;
+
+// ÑÓÊ±º¯Êý³õÊ¼»¯
+void Delay_Init(void)
 {
-	SysTick->LOAD = 72 * xus;				//è®¾ç½®å®šæ—¶å™¨é‡è£…å€¼
-	SysTick->VAL = 0x00;					//æ¸…ç©ºå½“å‰è®¡æ•°å€¼
-	SysTick->CTRL = 0x00000005;				//è®¾ç½®æ—¶é’Ÿæºä¸ºHCLKï¼Œå¯åŠ¨å®šæ—¶å™¨
-	while(!(SysTick->CTRL & 0x00010000));	//ç­‰å¾…è®¡æ•°åˆ°0
-	SysTick->CTRL = 0x00000004;				//å…³é—­å®šæ—¶å™¨
+    // ÅäÖÃ SysTick Îª 1us ÖÐ¶ÏÒ»´Î
+    if (SysTick_Config(SystemCoreClock / 1000000))
+    {
+        while (1);  // ÅäÖÃ´íÎó£¬½øÈëËÀÑ­»·
+    }
 }
 
-/**
-  * @brief  æ¯«ç§’çº§å»¶æ—¶
-  * @param  xms å»¶æ—¶æ—¶é•¿ï¼ŒèŒƒå›´ï¼š0~4294967295
-  * @retval æ— 
-  */
-void Delay_ms(uint32_t xms)
+// ÑÓÊ±º¯Êý
+void Delay_us(uint32_t us)
 {
-	while(xms--)
-	{
-		Delay_us(1000);
-	}
+    TimingDelay = us;
+    while (TimingDelay!= 0);
 }
- 
-/**
-  * @brief  ç§’çº§å»¶æ—¶
-  * @param  xs å»¶æ—¶æ—¶é•¿ï¼ŒèŒƒå›´ï¼š0~4294967295
-  * @retval æ— 
-  */
-void Delay_s(uint32_t xs)
+
+// SysTick ÖÐ¶Ï´¦Àíº¯Êý
+void SysTick_Handler(void)
 {
-	while(xs--)
-	{
-		Delay_ms(1000);
-	}
-} 
+    if (TimingDelay!= 0)
+    {
+        TimingDelay--;
+    }
+}
+
+// ºÁÃë¼¶ÑÓÊ±º¯Êý
+void Delay_ms(uint32_t ms)
+{
+    Delay_us(ms * 1000);
+}
