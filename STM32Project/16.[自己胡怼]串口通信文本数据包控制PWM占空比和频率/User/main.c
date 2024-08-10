@@ -154,6 +154,8 @@ int main()
                 if(Ferq >= 0)
                 {
                     PWM_SetFerq(Ferq);
+                    OLED_ShowString(4,5,"Ferq£ºOK");
+                    USART1_SendString("Ferq£ºOK");
                 }
             }
             if(RXData[0] == 'D')//ÅÐ¶ÏÕ¼¿Õ±È
@@ -185,6 +187,8 @@ int main()
                 if(Duct >= 0)
                 {
                     PWM_SetDuct(Duct);
+                    OLED_ShowString(4,5,"Duct£ºOK");
+                    USART1_SendString("Duct£ºOK");
                 }
             }
             
