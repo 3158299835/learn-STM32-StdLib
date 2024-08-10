@@ -63,10 +63,6 @@ int16_t DuctNum(char* str)
         }
         if (str[i] >= '0' && str[i] <= '9') //只接收0-9
         {
-            if(str[1] == '0')//第一个数字不能为0
-            {
-                return -2;
-            }
             Duct = Duct * 10 + (str[i] - '0');  // 累加上当前数字（不是字符形式的）.然后把之前的数字全都往左移（*10）
         }
         i++;
@@ -110,9 +106,9 @@ int main()
     OLED_ShowString(3,1,"RXStr:");
     OLED_ShowString(4,1,"Cmd:");
     
-    USART1_SendString("你好，我是PWM调试小助手\n");
-    USART1_SendString("输入 F数字 修改频率\n");
-    USART1_SendString("输入 D数字 修改占空比\n");
+    USART1_SendString("\n你好，我是PWM调试小助手\n");
+    USART1_SendString("输入 @F数字 修改频率\n");
+    USART1_SendString("输入 @D数字 修改占空比\n");
     
     int16_t Ferq = 0;
     int16_t Duct = 0;
