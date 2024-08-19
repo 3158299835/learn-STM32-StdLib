@@ -1,36 +1,41 @@
-#include "delay.h"
+#include "stm32f10x.h"
 
-// 定义延时计数值
-static volatile uint32_t TimingDelay;
-
-// 延时函数初始化
-void Delay_Init(void)
+/**
+  * @brief  微秒级延时
+  * @param  xus 延时时长，范围：0~233015
+  * @retval 无
+  */
+void Delay_us(uint32_t xus)
 {
-    // 配置 SysTick 为 1us 中断一次
-    if (SysTick_Config(SystemCoreClock / 1000000))
-    {
-        while (1);  // 配置错误，进入死循环
-    }
+	SysTick->LOAD = 72 * xus;				//设置定时器重装值
+	SysTick->VAL = 0x00;					//清空当前计数值
+	SysTick->CTRL = 0x00000005;				//设置时钟源为HCLK，启动定时器
+	while(!(SysTick->CTRL & 0x00010000));	//等待计数到0
+	SysTick->CTRL = 0x00000004;				//关闭定时器
 }
 
-// 延时函数
-void Delay_us(uint32_t us)
+/**
+  * @brief  毫秒级延时
+  * @param  xms 延时时长，范围：0~4294967295
+  * @retval 无
+  */
+void Delay_ms(uint32_t xms)
 {
-    TimingDelay = us;
-    while (TimingDelay!= 0);
+	while(xms--)
+	{
+		Delay_us(1000);
+	}
 }
-
-// SysTick 中断处理函数
-void SysTick_Handler(void)
+ 
+/**
+  * @brief  秒级延时
+  * @param  xs 延时时长，范围：0~4294967295
+  * @retval 无
+  */
+void Delay_s(uint32_t xs)
 {
-    if (TimingDelay!= 0)
-    {
-        TimingDelay--;
-    }
-}
-
-// 毫秒级延时函数
-void Delay_ms(uint32_t ms)
-{
-    Delay_us(ms * 1000);
-}
+	while(xs--)
+	{
+		Delay_ms(1000);
+	}
+} 
