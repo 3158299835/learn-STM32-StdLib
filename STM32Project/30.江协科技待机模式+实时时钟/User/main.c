@@ -14,6 +14,8 @@ int main(void)
     OLED_ShowString(2, 1, "ALR:");  //闹钟值
     OLED_ShowString(3, 1, "ALRF:"); //闹钟标志位
     
+    PWR_WakeUpPinCmd(ENABLE);
+    
     //存下要显示的闹钟值（闹钟寄存器只可写不可读，所以要存下，方便显示）
     uint32_t Alarm = RTC_GetCounter() + 10;
     //设定闹钟为十秒后
